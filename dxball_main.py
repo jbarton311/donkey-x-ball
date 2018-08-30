@@ -23,9 +23,9 @@ class Paddle(object):
 
 
 def redrawGameWindow():
-    pygame.display.update()
+    win.fill((0, 0, 0))
     paddle.draw_paddle()
-
+    pygame.display.update()
 
 run = True
 paddle = Paddle()
