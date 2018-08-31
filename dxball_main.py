@@ -3,15 +3,16 @@ import pygame
 pygame.init()
 pygame.font.init()
 
-window_width = 800
+window_width = 750
 window_height = 600
-dividing_bar_y = 30
-dividing_bar_height = 10
+dividing_bar_y = 36
+dividing_bar_height = 6
 
 win = pygame.display.set_mode((window_width, window_height))
 pygame.display.set_caption("Donkey X Ball")
 clock = pygame.time.Clock()
 myfont = pygame.font.SysFont('Arial Bold', 22)
+small_font = pygame.font.SysFont('Arial Bold', 15)
 
 ball_hit_sound = pygame.mixer.Sound('quick_fart_x.wav')
 lost_ball_sound = pygame.mixer.Sound('toilet_flushing.wav')
@@ -30,7 +31,7 @@ class Paddle(object):
         self.height = 10
         self.width = 75
         self.vel = 20
-        self.color = (0, 0, 255)
+        self.color = (193, 202, 214)
 
     def draw_paddle(self):
         self.x, _ = pygame.mouse.get_pos()
@@ -47,7 +48,7 @@ class Block(object):
         self.y = y
         self.height = 20
         self.width = 40
-        self.color = (123, 28, 255)
+        self.color = (51, 101, 138)
 
     def draw(self):
         pygame.draw.rect(win, self.color,
@@ -60,31 +61,39 @@ class Scoreboard():
         self.level = level
 
     def draw(self):
-
+        blue_text = (36, 123, 160)
+        red_text = (255, 107, 107)
         # Set up dividing bar between scoreboard and game
-        pygame.draw.rect(win, (100, 100, 100),
+        pygame.draw.rect(win, (33, 131, 128),
                          (0, dividing_bar_y, window_width, dividing_bar_height))
 
         self.score = self.level.blocks_hit
+
+        donkey_title = myfont.render("Donkey Ball", 1, blue_text)
+        win.blit(donkey_title, (320, 5))
         # Print Out Score
-        scoretext = myfont.render(f"Score: {self.score}", 1, (255, 0, 0))
+        scoretext = myfont.render(f"SCORE: {self.score}", 1, red_text)
         win.blit(scoretext, (5, 5))
 
-        # Print Out Level Name
-        level_text = myfont.render(level_1.string_level_name(), 1, (122, 122, 200))
-        win.blit(level_text, (700, 5))
 
-        if self.game_ball.level_status:
+
+        # Print Out Level Name
+        level_text = small_font.render(level_1.string_level_name(), 1, blue_text)
+        win.blit(level_text, (600, 5))
+
+        if self.game_ball.still_alive_check() == False:
+            level_situation = 'GAME OVER'
+        elif self.game_ball.level_status:
             level_situation = self.game_ball.level_status
         else:
             level_situation = "Play the game, kid!"
 
-        level_status = myfont.render(level_situation, 1, (122, 122, 200))
-        win.blit(level_status, (300, 5))
+        level_status = small_font.render(level_situation, 1, blue_text)
+        win.blit(level_status, (600, 22))
 
-        loggin_text = f"Lives: {self.game_ball.lives}"
-        loggin_print = myfont.render(loggin_text, 1, (122, 122, 200))
-        win.blit(loggin_print, (300, 50))
+        loggin_text = f"LIVES: {self.game_ball.lives}"
+        loggin_print = myfont.render(loggin_text, 1, red_text)
+        win.blit(loggin_print, (100, 5))
 
 
 class GameBall(object):
@@ -98,7 +107,7 @@ class GameBall(object):
         self.y_direction = 1
         self.radius = 5
         self.vel = 0
-        self.color = (0, 255, 255)
+        self.color = (32, 252, 143)
         self.ball_started = False
         self.still_alive = True
         self.new_life = False
@@ -163,10 +172,6 @@ def redrawGameWindow():
     win.fill((0, 0, 0))
     paddle.draw_paddle()
     gb.draw_ball()
-    score = level_1.blocks_hit
-
-
-
     sb.draw()
 
     for block in level_1.blocks:
