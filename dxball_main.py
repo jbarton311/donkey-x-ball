@@ -1,7 +1,9 @@
 import pygame
 pygame.init()
 
-win = pygame.display.set_mode((500, 500))
+window_width = 800
+window_height = 600
+win = pygame.display.set_mode((window_width, window_height))
 pygame.display.set_caption("Donkey X Ball")
 clock = pygame.time.Clock()
 
@@ -10,16 +12,32 @@ class Paddle(object):
     Main class for the paddle
     '''
     def __init__(self):
-        self.y = 480
+        self.y = window_height - 23
         self.x = 200
 
-        self.height = 20
+        self.height = 10
         self.width = 75
         self.vel = 20
         self.color = (0, 0, 255)
 
     def draw_paddle(self):
         self.x, _ = pygame.mouse.get_pos()
+        pygame.draw.rect(win, self.color,
+                         (self.x, self.y, self.width, self.height))
+
+
+class Block(object):
+    '''
+    Main class for a standard block
+    '''
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.height = 30
+        self.width = 50
+        self.color = (123, 28, 255)
+
+    def draw(self):
         pygame.draw.rect(win, self.color,
                          (self.x, self.y, self.width, self.height))
 
@@ -34,38 +52,64 @@ class GameBall(object):
         self.x_direction = 1
         self.y_direction = 1
         self.radius = 5
-        self.vel = 10
+        self.vel = 5
         self.color = (0, 255, 255)
 
     def draw_ball(self):
-        if self.x <=5:
+        # Make sure ball stays within window
+        if self.x <= 5:
             self.x_direction = 1
-        elif self.x >= 490:
+        elif self.x >= window_width - self.radius:
             self.x_direction = -1
 
-        if self.y <=5:
+        if self.y <= 5:
             self.y_direction = 1
-        elif self.y >= 490:
+        elif self.y >= window_height - self.radius:
             self.y_direction = -1
 
         self.x = self.x + (self.x_direction * self.vel)
         self.y = self.y + (self.y_direction * self.vel)
         pygame.draw.circle(win, self.color, (self.x, self.y), self.radius)
 
+
 def redrawGameWindow():
     win.fill((0, 0, 0))
     paddle.draw_paddle()
     gb.draw_ball()
+
+    for block in level_1.blocks:
+        block.draw()
     pygame.display.update()
+
+
+class Level(object):
+    def __init__(self):
+        b1 = Block(10, 10)
+        b2 = Block(100, 100)
+        b3 = Block(200, 200)
+        b4 = Block(300, 300)
+        b5 = Block(400, 400)
+        b6 = Block(500, 500)
+        b7 = Block(600, 600)
+        b8 = Block(600, 400)
+        b9 = Block(600, 200)
+        b10 = Block(700, 100)
+
+        self.blocks = [b1, b2, b3, b4, b5, b6, b7, b8, b9, b10]
+
+    def remove_block(self, block):
+        self.blocks.remove(block)
+
 
 
 run = True
 paddle = Paddle()
 gb = GameBall()
+level_1 = Level()
 
 while run:
     #pygame.time.delay(100)
-    clock.tick(40)
+    clock.tick(60)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -73,14 +117,14 @@ while run:
 
     keys = pygame.key.get_pressed()
 
-    if keys[pygame.K_LEFT] and paddle.x > paddle.vel:
-        print(f"paddle width: {paddle.width}")
-        paddle.x -= paddle.vel
+    if gb.y >= window_height - 5:
+        gb.vel = 0
+    elif paddle.y < gb.y < paddle.y + paddle.height and paddle.x < gb.x < paddle.x + paddle.width:
+        gb.y_direction = gb.y_direction*-1
 
-    elif keys[pygame.K_RIGHT] and paddle.x < 500 - paddle.width - paddle.vel:
-        print(f"paddle width: {paddle.width}")
-        paddle.x += paddle.vel
-
+    for block in level_1.blocks:
+        if block.y < gb.y < block.y + block.height and block.x < gb.x < block.x + block.width:
+            level_1.remove_block(block)
 
     redrawGameWindow()
 
