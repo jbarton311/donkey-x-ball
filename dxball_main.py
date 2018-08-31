@@ -1,4 +1,5 @@
 import pygame
+import random
 
 pygame.init()
 pygame.font.init()
@@ -54,6 +55,8 @@ class Block(object):
         pygame.draw.rect(win, self.color,
                          (self.x, self.y, self.width, self.height))
 
+    def __str__(self):
+        return f"Block at ({self.x}, {self.y})"
 
 class Scoreboard():
     def __init__(self, game_ball, level):
@@ -63,23 +66,24 @@ class Scoreboard():
     def draw(self):
         blue_text = (36, 123, 160)
         red_text = (255, 107, 107)
+        x_right_side_align = window_width - 150
         # Set up dividing bar between scoreboard and game
         pygame.draw.rect(win, (33, 131, 128),
                          (0, dividing_bar_y, window_width, dividing_bar_height))
 
         self.score = self.level.blocks_hit
 
-        donkey_title = myfont.render("Donkey Ball", 1, blue_text)
-        win.blit(donkey_title, (320, 5))
+        donkey_title = myfont.render("Donkey X Ball", 1, blue_text)
+        win.blit(donkey_title, (window_width/2 - 50, 12))
         # Print Out Score
         scoretext = myfont.render(f"SCORE: {self.score}", 1, red_text)
-        win.blit(scoretext, (5, 5))
+        win.blit(scoretext, (5, 12))
 
 
 
         # Print Out Level Name
         level_text = small_font.render(level_1.string_level_name(), 1, blue_text)
-        win.blit(level_text, (600, 5))
+        win.blit(level_text, (x_right_side_align, 5))
 
         if self.game_ball.still_alive_check() == False:
             level_situation = 'GAME OVER'
@@ -89,11 +93,14 @@ class Scoreboard():
             level_situation = "Play the game, kid!"
 
         level_status = small_font.render(level_situation, 1, blue_text)
-        win.blit(level_status, (600, 22))
+        win.blit(level_status, (x_right_side_align, 22))
 
         loggin_text = f"LIVES: {self.game_ball.lives}"
         loggin_print = myfont.render(loggin_text, 1, red_text)
-        win.blit(loggin_print, (100, 5))
+        win.blit(loggin_print, (100, 12))
+
+        random_power = small_font.render(f"Power Up: {self.game_ball.special_power}", 1, (120, 111, 77))
+        win.blit(random_power, (200, 12))
 
 
 class GameBall(object):
@@ -113,6 +120,8 @@ class GameBall(object):
         self.new_life = False
         self.level_status = "Play the game, kid!"
         self.lives = 3
+        self.blocks_hit = 0
+        self.special_power = None
 
     def lost_life(self):
         '''Function to reduce lives when ball passes paddle'''
@@ -281,8 +290,12 @@ while run:
         if block.y < gb.y < block.y + block.height and block.x < gb.x < block.x + block.width:
             ball_hit_sound.play()
             level_1.remove_block(block)
+            gb.blocks_hit += 1
+            if random.randint(1, 4) == 3:
+                gb.special_power = random.choice(['Thru Ball', 'Fire Ball', 'Something bad'])
 
 
     redrawGameWindow()
 
+print(f"Game ball hits: {gb.blocks_hit}")
 pygame.quit()
