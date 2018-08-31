@@ -104,9 +104,9 @@ def redrawGameWindow():
     level_status = myfont.render(level_situation, 1, (122, 122, 200))
     win.blit(level_status, (300, 5))
 
-    #loggin_text = f"Ball Y: {gb.y}, Window Height: {window_height}"
-    #loggin_print = myfont.render(loggin_text, 1, (122, 122, 200))
-    #win.blit(loggin_print, (300, 50))
+    # loggin_text = f"Ball Y: {gb.y}, Window Height: {window_height}"
+    # loggin_print = myfont.render(loggin_text, 1, (122, 122, 200))
+    # win.blit(loggin_print, (300, 50))
 
     for block in level_1.blocks:
         block.draw()
@@ -152,13 +152,12 @@ class Level(object):
         b15 = Block(475, 225)
         b16 = Block(550, 225)
 
-
-
         self.blocks = [d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13, d14,
-                        b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15, b16]
+                       b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15, b16]
         self.level_name = "DBT"
 
     def remove_block(self, block):
+        ''' Will remove a block from the list. Will use when a block gets hit'''
         self.blocks.remove(block)
         self.blocks_hit += 1
         print(f"HIT BLOCK {block}! Hit count at {self.blocks_hit}")
@@ -173,25 +172,27 @@ gb = GameBall()
 level_1 = Level()
 
 while run:
-    #pygame.time.delay(100)
+    # pygame.time.delay(100)
     clock.tick(60)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
+        # Wait to start moving ball until a click
         if event.type == pygame.MOUSEBUTTONDOWN:
             gb.level_started = "Game on!"
 
-    keys = pygame.key.get_pressed()
-
+    # If the ball gets within 15 pixels of the bottom we are saying that's an L
     if gb.y >= window_height - 15:
-        print("FIRST CONDITION")
-        gb.level_started = "BOTCH JOB HAHA"
+        gb.level_started = "YOU BLEW IT (Sandler voice)"
         gb.still_alive = False
+
+    # If the ball hits the paddle
     elif paddle.y < gb.y < paddle.y + paddle.height and paddle.x < gb.x < paddle.x + paddle.width:
         print("SOMETHING HIT!")
         gb.y_direction = gb.y_direction*-1
 
+    # Loop thru each block and figure out if it got hit
     for block in level_1.blocks:
         if block.y < gb.y < block.y + block.height and block.x < gb.x < block.x + block.width:
             level_1.remove_block(block)
