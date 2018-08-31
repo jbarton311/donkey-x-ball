@@ -1,11 +1,14 @@
 import pygame
 pygame.init()
+pygame.font.init()
 
 window_width = 800
 window_height = 600
 win = pygame.display.set_mode((window_width, window_height))
 pygame.display.set_caption("Donkey X Ball")
 clock = pygame.time.Clock()
+myfont = pygame.font.SysFont('monospace', 15)
+
 
 class Paddle(object):
     '''
@@ -76,6 +79,9 @@ def redrawGameWindow():
     win.fill((0, 0, 0))
     paddle.draw_paddle()
     gb.draw_ball()
+    score = level_1.blocks_hit
+    scoretext = myfont.render(f"Score {score}", 1, (255, 0, 0))
+    win.blit(scoretext, (5, 50))
 
     for block in level_1.blocks:
         block.draw()
@@ -83,8 +89,12 @@ def redrawGameWindow():
 
 
 class Level(object):
+    '''
+    Class to set up a level of blocks
+    '''
     def __init__(self):
-        b1 = Block(10, 10)
+        self.blocks_hit = 0
+        b1 = Block(300, 10)
         b2 = Block(100, 100)
         b3 = Block(200, 200)
         b4 = Block(300, 300)
@@ -99,6 +109,8 @@ class Level(object):
 
     def remove_block(self, block):
         self.blocks.remove(block)
+        self.blocks_hit += 1
+        print(f"HIT BLOCK {block}! Hit count at {self.blocks_hit}")
 
 
 
