@@ -9,6 +9,10 @@ pygame.display.set_caption("Donkey X Ball")
 clock = pygame.time.Clock()
 myfont = pygame.font.SysFont('Arial Bold', 22)
 
+ball_hit_sound = pygame.mixer.Sound('quick_fart_x.wav')
+music = pygame.mixer.music.load('music.mp3')
+pygame.mixer.music.play(-1)
+
 
 class Paddle(object):
     '''
@@ -195,7 +199,9 @@ while run:
     # Loop thru each block and figure out if it got hit
     for block in level_1.blocks:
         if block.y < gb.y < block.y + block.height and block.x < gb.x < block.x + block.width:
+            ball_hit_sound.play()
             level_1.remove_block(block)
+
 
     redrawGameWindow()
 
