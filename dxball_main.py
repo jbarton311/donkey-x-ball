@@ -44,12 +44,12 @@ class Block(object):
     '''
     Main class for a standard block
     '''
-    def __init__(self, x, y):
+    def __init__(self, x, y, color=(51, 101, 138)):
         self.x = x
         self.y = y
         self.height = 20
         self.width = 40
-        self.color = (51, 101, 138)
+        self.color = color
 
     def draw(self):
         pygame.draw.rect(win, self.color,
@@ -57,6 +57,7 @@ class Block(object):
 
     def __str__(self):
         return f"Block at ({self.x}, {self.y})"
+
 
 class Scoreboard():
     def __init__(self, game_ball, level):
@@ -99,7 +100,7 @@ class Scoreboard():
         loggin_print = myfont.render(loggin_text, 1, red_text)
         win.blit(loggin_print, (100, 12))
 
-        random_power = small_font.render(f"Power Up: {self.game_ball.special_power}", 1, (120, 111, 77))
+        random_power = small_font.render(f"Power Up: {self.game_ball.special_power}", 1, (253, 255, 252))
         win.blit(random_power, (200, 12))
 
 
@@ -194,50 +195,52 @@ class Level(object):
     '''
     def __init__(self):
         self.blocks_hit = 0
+        d_color = (5, 130, 202)
+        b_color = (253, 255, 252)
+        t_color = (231, 29, 54)
 
-        d1 = Block(100, 100)
-        d2 = Block(100, 150)
-        d3 = Block(100, 200)
-        d4 = Block(100, 250)
-        d5 = Block(100, 300)
-        d6 = Block(100, 350)
-        d7 = Block(175, 350)
-        d8 = Block(250, 350)
-        d9 = Block(300, 300)
-        d10 = Block(300, 250)
-        d11 = Block(300, 200)
-        d12 = Block(300, 150)
-        d13 = Block(250, 100)
-        d14 = Block(175, 100)
+        d1 = Block(100, 100, d_color)
+        d2 = Block(100, 150, d_color)
+        d3 = Block(100, 200, d_color)
+        d4 = Block(100, 250, d_color)
+        d5 = Block(100, 300, d_color)
+        d6 = Block(100, 350, d_color)
+        d7 = Block(175, 350, d_color)
+        d8 = Block(250, 350, d_color)
+        d9 = Block(300, 300, d_color)
+        d10 = Block(300, 250, d_color)
+        d11 = Block(300, 200, d_color)
+        d12 = Block(300, 150, d_color)
+        d13 = Block(250, 100, d_color)
+        d14 = Block(175, 100, d_color)
 
-        b1 = Block(400, 100)
-        b2 = Block(400, 150)
-        b3 = Block(400, 200)
-        b4 = Block(400, 250)
-        b5 = Block(400, 300)
-        b6 = Block(400, 350)
-        b7 = Block(475, 350)
-        b8 = Block(550, 350)
-        b9 = Block(600, 300)
-        b10 = Block(600, 250)
-        b11 = Block(600, 200)
-        b12 = Block(600, 150)
-        b13 = Block(550, 100)
-        b14 = Block(475, 100)
-        b15 = Block(475, 225)
-        b16 = Block(550, 225)
+        b1 = Block(400, 100, b_color)
+        b2 = Block(400, 150, b_color)
+        b3 = Block(400, 200, b_color)
+        b4 = Block(400, 250, b_color)
+        b5 = Block(400, 300, b_color)
+        b6 = Block(400, 350, b_color)
+        b7 = Block(475, 350, b_color)
+        b8 = Block(550, 350, b_color)
+        b9 = Block(600, 300, b_color)
+        b10 = Block(600, 250, b_color)
+        b11 = Block(600, 200, b_color)
+        b12 = Block(600, 150, b_color)
+        b13 = Block(550, 100, b_color)
+        b14 = Block(475, 100, b_color)
+        b15 = Block(475, 225, b_color)
+        b16 = Block(550, 225, b_color)
 
-        t1 = Block(850, 100)
-        t2 = Block(850, 150)
-        t3 = Block(850, 200)
-        t4 = Block(850, 250)
-        t5 = Block(850, 300)
-        t6 = Block(850, 350)
-
-        t7 = Block(730, 100)
-        t8 = Block(790, 100)
-        t9 = Block(910, 100)
-        t10 = Block(970, 100)
+        t1 = Block(850, 100, t_color)
+        t2 = Block(850, 150, t_color)
+        t3 = Block(850, 200, t_color)
+        t4 = Block(850, 250, t_color)
+        t5 = Block(850, 300, t_color)
+        t6 = Block(850, 350, t_color)
+        t7 = Block(730, 100, t_color)
+        t8 = Block(790, 100, t_color)
+        t9 = Block(910, 100, t_color)
+        t10 = Block(970, 100, t_color)
 
         self.blocks = [d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13, d14,
                        b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15, b16,
