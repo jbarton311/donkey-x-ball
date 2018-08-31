@@ -5,6 +5,9 @@ pygame.font.init()
 
 window_width = 800
 window_height = 600
+dividing_bar_y = 30
+dividing_bar_height = 10
+
 win = pygame.display.set_mode((window_width, window_height))
 pygame.display.set_caption("Donkey X Ball")
 clock = pygame.time.Clock()
@@ -49,6 +52,39 @@ class Block(object):
     def draw(self):
         pygame.draw.rect(win, self.color,
                          (self.x, self.y, self.width, self.height))
+
+
+class Scoreboard():
+    def __init__(self, game_ball, level):
+        self.game_ball = game_ball
+        self.level = level
+
+    def draw(self):
+
+        # Set up dividing bar between scoreboard and game
+        pygame.draw.rect(win, (100, 100, 100),
+                         (0, dividing_bar_y, window_width, dividing_bar_height))
+
+        self.score = self.level.blocks_hit
+        # Print Out Score
+        scoretext = myfont.render(f"Score: {self.score}", 1, (255, 0, 0))
+        win.blit(scoretext, (5, 5))
+
+        # Print Out Level Name
+        level_text = myfont.render(level_1.string_level_name(), 1, (122, 122, 200))
+        win.blit(level_text, (700, 5))
+
+        if self.game_ball.level_status:
+            level_situation = self.game_ball.level_status
+        else:
+            level_situation = "Play the game, kid!"
+
+        level_status = myfont.render(level_situation, 1, (122, 122, 200))
+        win.blit(level_status, (300, 5))
+
+        loggin_text = f"Lives: {self.game_ball.lives}"
+        loggin_print = myfont.render(loggin_text, 1, (122, 122, 200))
+        win.blit(loggin_print, (300, 50))
 
 
 class GameBall(object):
@@ -112,7 +148,7 @@ class GameBall(object):
             elif self.x >= window_width - self.radius:
                 self.x_direction = -1
 
-            if self.y <= 5:
+            if self.y <= dividing_bar_y + dividing_bar_height:
                 self.y_direction = 1
             elif self.y >= window_height - self.radius:
                 self.y_direction = -1
@@ -129,25 +165,9 @@ def redrawGameWindow():
     gb.draw_ball()
     score = level_1.blocks_hit
 
-    # Print Out Score
-    scoretext = myfont.render(f"Score: {score}", 1, (255, 0, 0))
-    win.blit(scoretext, (5, 5))
 
-    # Print Out Level Name
-    level_text = myfont.render(level_1.string_level_name(), 1, (122, 122, 200))
-    win.blit(level_text, (700, 5))
 
-    if gb.level_status:
-        level_situation = gb.level_status
-    else:
-        level_situation = "Play the game, kid!"
-
-    level_status = myfont.render(level_situation, 1, (122, 122, 200))
-    win.blit(level_status, (300, 5))
-
-    loggin_text = f"Lives: {gb.lives}"
-    loggin_print = myfont.render(loggin_text, 1, (122, 122, 200))
-    win.blit(loggin_print, (300, 50))
+    sb.draw()
 
     for block in level_1.blocks:
         block.draw()
@@ -211,6 +231,7 @@ run = True
 paddle = Paddle()
 gb = GameBall()
 level_1 = Level()
+sb = Scoreboard(gb, level_1)
 
 while run:
     # pygame.time.delay(100)
