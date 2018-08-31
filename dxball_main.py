@@ -120,6 +120,7 @@ class GameBall(object):
         self.y = window_height - 28
         self.x_direction = 1
         self.y_direction = 1
+        self.y_slope = 1.0
         self.radius = 5
         self.vel = 0
         self.color = (32, 252, 143)
@@ -142,6 +143,9 @@ class GameBall(object):
             return True
         else:
             return False
+
+    def restart_game(self):
+        self.lives = 3
 
     def ready_new_life(self):
         '''Variables to set for a new life'''
@@ -181,7 +185,7 @@ class GameBall(object):
 
             # Make the ball move in the correct direction
             self.x = self.x + (self.x_direction * self.vel)
-            self.y = self.y + (self.y_direction * self.vel)
+            self.y = int(self.y + (self.y_direction * self.vel) * self.y_slope)
             pygame.draw.circle(win, self.color, (self.x, self.y), self.radius)
 
 
@@ -263,6 +267,58 @@ class Level(object):
     def string_level_name(self):
         return f"LEVEL: {self.level_name}"
 
+    def restart_level(self):
+        d_color = (5, 130, 202)
+        b_color = (253, 255, 252)
+        t_color = (231, 29, 54)
+
+        d1 = Block(100, 100, d_color)
+        d2 = Block(100, 150, d_color)
+        d3 = Block(100, 200, d_color)
+        d4 = Block(100, 250, d_color)
+        d5 = Block(100, 300, d_color)
+        d6 = Block(100, 350, d_color)
+        d7 = Block(175, 350, d_color)
+        d8 = Block(250, 350, d_color)
+        d9 = Block(300, 300, d_color)
+        d10 = Block(300, 250, d_color)
+        d11 = Block(300, 200, d_color)
+        d12 = Block(300, 150, d_color)
+        d13 = Block(250, 100, d_color)
+        d14 = Block(175, 100, d_color)
+
+        b1 = Block(400, 100, b_color)
+        b2 = Block(400, 150, b_color)
+        b3 = Block(400, 200, b_color)
+        b4 = Block(400, 250, b_color)
+        b5 = Block(400, 300, b_color)
+        b6 = Block(400, 350, b_color)
+        b7 = Block(475, 350, b_color)
+        b8 = Block(550, 350, b_color)
+        b9 = Block(600, 300, b_color)
+        b10 = Block(600, 250, b_color)
+        b11 = Block(600, 200, b_color)
+        b12 = Block(600, 150, b_color)
+        b13 = Block(550, 100, b_color)
+        b14 = Block(475, 100, b_color)
+        b15 = Block(475, 225, b_color)
+        b16 = Block(550, 225, b_color)
+
+        t1 = Block(850, 100, t_color)
+        t2 = Block(850, 150, t_color)
+        t3 = Block(850, 200, t_color)
+        t4 = Block(850, 250, t_color)
+        t5 = Block(850, 300, t_color)
+        t6 = Block(850, 350, t_color)
+        t7 = Block(730, 100, t_color)
+        t8 = Block(790, 100, t_color)
+        t9 = Block(910, 100, t_color)
+        t10 = Block(970, 100, t_color)
+
+        self.blocks = [d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13, d14,
+                       b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15, b16,
+                       t1, t2, t3, t4, t5, t6, t7, t8, t9, t10]
+
 
 run = True
 paddle = Paddle()
@@ -282,6 +338,11 @@ while run:
             if gb.still_alive and not gb.ball_started:
                 gb.ball_started = True
 
+    keys = pygame.key.get_pressed()
+
+    if keys[pygame.K_SPACE] and gb.lives == 0:
+        gb.restart_game()
+        level_1.restart_level()
 
     # If the ball gets within 15 pixels of the bottom we are saying that's an L
     if gb.y >= window_height - 15:
@@ -292,6 +353,16 @@ while run:
 
     # If the ball hits the paddle
     elif paddle.y < gb.y < paddle.y + paddle.height and paddle.x < gb.x < paddle.paddle_right_edge:
+        ball_x_on_paddle = (gb.x - paddle.x) / paddle.width
+        '''
+        if ball_x_on_paddle < 0.5:
+            gb.x_direction = -1
+            gb.y_slope = 5 * ball_x_on_paddle
+
+        elif ball_x_on_paddle >= 0.5:
+            gb.x_direction = 1
+            gb.y_slope = 5 * (1 - ball_x_on_paddle)
+        '''
         print("SOMETHING HIT!")
         gb.y_direction = gb.y_direction*-1
         if gb.x < paddle.paddle_mid:
@@ -308,7 +379,6 @@ while run:
             gb.blocks_hit += 1
             if random.randint(1, 4) == 3:
                 gb.special_power = random.choice(['Thru Ball', 'Fire Ball', 'Something bad'])
-
 
     redrawGameWindow()
 
