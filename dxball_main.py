@@ -1,4 +1,5 @@
 import pygame
+
 pygame.init()
 pygame.font.init()
 
@@ -10,6 +11,7 @@ clock = pygame.time.Clock()
 myfont = pygame.font.SysFont('Arial Bold', 22)
 
 ball_hit_sound = pygame.mixer.Sound('quick_fart_x.wav')
+lost_ball_sound = pygame.mixer.Sound('toilet_flushing.wav')
 music = pygame.mixer.music.load('music.mp3')
 pygame.mixer.music.play(-1)
 
@@ -61,15 +63,49 @@ class GameBall(object):
         self.radius = 5
         self.vel = 0
         self.color = (0, 255, 255)
-        self.level_started = False
+        self.ball_started = False
         self.still_alive = True
+        self.new_life = False
+        self.level_status = "Play the game, kid!"
+        self.lives = 3
+
+    def lost_life(self):
+        '''Function to reduce lives when ball passes paddle'''
+        if self.lives > 0:
+            self.lives -= 1
+
+    def still_alive_check(self):
+        '''Check to see if we are still alive.'''
+        if self.lives >= 1:
+            return True
+        else:
+            return False
+
+    def ready_new_life(self):
+        '''Variables to set for a new life'''
+        self.vel = 0
+        self.x = pygame.mouse.get_pos()[0] + 37
+        self.y = window_height - 28
+        self.y_direction = -1
 
     def draw_ball(self):
-        if self.still_alive:
-            if self.level_started and self.still_alive:
+        '''Figure out where to draw the ball on the screen'''
+
+        # Do they still have lives left? If so, go to logic
+        if self.still_alive_check():
+
+            # Is this a new life? Initialize variables
+            if self.new_life and not self.ball_started:
+                self.ready_new_life()
+
+            # If the ball is started make it move!
+            if self.ball_started:
+                self.level_status = "Play ball, bro!"
                 self.vel = 5
+            # If not, make it stay on the paddle
             else:
                 self.x = pygame.mouse.get_pos()[0] + 37
+
             # Make sure ball stays within window
             if self.x <= 5:
                 self.x_direction = 1
@@ -81,6 +117,7 @@ class GameBall(object):
             elif self.y >= window_height - self.radius:
                 self.y_direction = -1
 
+            # Make the ball move in the correct direction
             self.x = self.x + (self.x_direction * self.vel)
             self.y = self.y + (self.y_direction * self.vel)
             pygame.draw.circle(win, self.color, (self.x, self.y), self.radius)
@@ -100,17 +137,17 @@ def redrawGameWindow():
     level_text = myfont.render(level_1.string_level_name(), 1, (122, 122, 200))
     win.blit(level_text, (700, 5))
 
-    if gb.level_started:
-        level_situation = gb.level_started
+    if gb.level_status:
+        level_situation = gb.level_status
     else:
         level_situation = "Play the game, kid!"
 
     level_status = myfont.render(level_situation, 1, (122, 122, 200))
     win.blit(level_status, (300, 5))
 
-    # loggin_text = f"Ball Y: {gb.y}, Window Height: {window_height}"
-    # loggin_print = myfont.render(loggin_text, 1, (122, 122, 200))
-    # win.blit(loggin_print, (300, 50))
+    loggin_text = f"Lives: {gb.lives}"
+    loggin_print = myfont.render(loggin_text, 1, (122, 122, 200))
+    win.blit(loggin_print, (300, 50))
 
     for block in level_1.blocks:
         block.draw()
@@ -184,12 +221,16 @@ while run:
             run = False
         # Wait to start moving ball until a click
         if event.type == pygame.MOUSEBUTTONDOWN:
-            gb.level_started = "Game on!"
+            if gb.still_alive and not gb.ball_started:
+                gb.ball_started = True
+
 
     # If the ball gets within 15 pixels of the bottom we are saying that's an L
     if gb.y >= window_height - 15:
-        gb.level_started = "YOU BLEW IT (Sandler voice)"
-        gb.still_alive = False
+        gb.level_status = "YOU BLEW IT (Sandler voice)"
+        gb.lost_life()
+        gb.ball_started = False
+        gb.new_life = True
 
     # If the ball hits the paddle
     elif paddle.y < gb.y < paddle.y + paddle.height and paddle.x < gb.x < paddle.x + paddle.width:
