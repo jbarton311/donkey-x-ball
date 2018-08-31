@@ -3,7 +3,7 @@ import pygame
 pygame.init()
 pygame.font.init()
 
-window_width = 750
+window_width = 1100
 window_height = 600
 dividing_bar_y = 36
 dividing_bar_height = 6
@@ -218,8 +218,21 @@ class Level(object):
         b15 = Block(475, 225)
         b16 = Block(550, 225)
 
+        t1 = Block(850, 100)
+        t2 = Block(850, 150)
+        t3 = Block(850, 200)
+        t4 = Block(850, 250)
+        t5 = Block(850, 300)
+        t6 = Block(850, 350)
+
+        t7 = Block(730, 100)
+        t8 = Block(790, 100)
+        t9 = Block(910, 100)
+        t10 = Block(970, 100)
+
         self.blocks = [d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13, d14,
-                       b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15, b16]
+                       b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15, b16,
+                       t1, t2, t3, t4, t5, t6, t7, t8, t9, t10]
         self.level_name = "DBT"
 
     def remove_block(self, block):
