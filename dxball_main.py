@@ -67,6 +67,7 @@ class Scoreboard():
         self.game_ball = game_ball
         self.level = level
         self.paddle = paddle
+        self.score = 0
 
     def draw(self):
         blue_text = (36, 123, 160)
@@ -76,12 +77,12 @@ class Scoreboard():
         pygame.draw.rect(win, (33, 131, 128),
                          (0, dividing_bar_y, window_width, dividing_bar_height))
 
-        self.score = self.level.blocks_hit
+
 
         donkey_title = myfont.render("Donkey X Ball", 1, blue_text)
         win.blit(donkey_title, (window_width/2 - 50, 12))
         # Print Out Score
-        scoretext = myfont.render(f"SCORE: {self.score}", 1, red_text)
+        scoretext = myfont.render(f"SCORE: {self.game_ball.blocks_hit}", 1, red_text)
         win.blit(scoretext, (5, 12))
 
 
@@ -145,7 +146,8 @@ class GameBall(object):
             return False
 
     def restart_game(self):
-        self.lives = 3
+        self.lives = 4
+        self.blocks_hit = 0
 
     def ready_new_life(self):
         '''Variables to set for a new life'''
