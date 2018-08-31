@@ -28,11 +28,14 @@ class Paddle(object):
     def __init__(self):
         self.y = window_height - 23
         self.x = 200
-
         self.height = 10
         self.width = 75
         self.vel = 20
         self.color = (193, 202, 214)
+
+    def calc_mid_point(self):
+        self.paddle_right_edge = self.x + self.width
+        self.paddle_mid = ((self.paddle_right_edge - self.x) / 2) + self.x
 
     def draw_paddle(self):
         self.x, _ = pygame.mouse.get_pos()
@@ -60,9 +63,10 @@ class Block(object):
 
 
 class Scoreboard():
-    def __init__(self, game_ball, level):
+    def __init__(self, game_ball, level, paddle):
         self.game_ball = game_ball
         self.level = level
+        self.paddle = paddle
 
     def draw(self):
         blue_text = (36, 123, 160)
@@ -103,6 +107,9 @@ class Scoreboard():
         random_power = small_font.render(f"Power Up: {self.game_ball.special_power}", 1, (253, 255, 252))
         win.blit(random_power, (200, 12))
 
+        paddle.calc_mid_point()
+        paddle_mid = small_font.render(f"Paddle-mid: {self.paddle.paddle_mid}", 1, (253, 255, 252))
+        win.blit(paddle_mid, (650, 12))
 
 class GameBall(object):
     '''
@@ -261,7 +268,7 @@ run = True
 paddle = Paddle()
 gb = GameBall()
 level_1 = Level()
-sb = Scoreboard(gb, level_1)
+sb = Scoreboard(gb, level_1, paddle)
 
 while run:
     # pygame.time.delay(100)
@@ -284,9 +291,14 @@ while run:
         gb.new_life = True
 
     # If the ball hits the paddle
-    elif paddle.y < gb.y < paddle.y + paddle.height and paddle.x < gb.x < paddle.x + paddle.width:
+    elif paddle.y < gb.y < paddle.y + paddle.height and paddle.x < gb.x < paddle.paddle_right_edge:
         print("SOMETHING HIT!")
         gb.y_direction = gb.y_direction*-1
+        if gb.x < paddle.paddle_mid:
+            gb.x_direction = -1
+        elif gb.x > paddle.paddle_mid:
+            gb.x_direction = 1
+
 
     # Loop thru each block and figure out if it got hit
     for block in level_1.blocks:
