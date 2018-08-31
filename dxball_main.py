@@ -7,7 +7,7 @@ window_height = 600
 win = pygame.display.set_mode((window_width, window_height))
 pygame.display.set_caption("Donkey X Ball")
 clock = pygame.time.Clock()
-myfont = pygame.font.SysFont('monospace', 15)
+myfont = pygame.font.SysFont('Arial Bold', 22)
 
 
 class Paddle(object):
@@ -50,15 +50,21 @@ class GameBall(object):
     Main class for the game ball
     '''
     def __init__(self):
-        self.x = 100
-        self.y = 280
+        self.x = 200
+        self.y = window_height - 28
         self.x_direction = 1
         self.y_direction = 1
         self.radius = 5
-        self.vel = 5
+        self.vel = 0
         self.color = (0, 255, 255)
+        self.level_started = False
 
     def draw_ball(self):
+
+        if self.level_started:
+            self.vel = 5
+        else:
+            self.x = pygame.mouse.get_pos()[0] + 37
         # Make sure ball stays within window
         if self.x <= 5:
             self.x_direction = 1
@@ -80,8 +86,8 @@ def redrawGameWindow():
     paddle.draw_paddle()
     gb.draw_ball()
     score = level_1.blocks_hit
-    scoretext = myfont.render(f"Score {score}", 1, (255, 0, 0))
-    win.blit(scoretext, (5, 50))
+    scoretext = myfont.render(f"Score: {score}", 1, (255, 0, 0))
+    win.blit(scoretext, (5, 5))
 
     for block in level_1.blocks:
         block.draw()
@@ -126,6 +132,8 @@ while run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            gb.level_started = True
 
     keys = pygame.key.get_pressed()
 
