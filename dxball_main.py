@@ -1,11 +1,10 @@
 import pygame
-import random
-
 import donkey_ball as db
 from donkey_ball.paddle import Paddle
 from donkey_ball.scoreboard import Scoreboard
-from donkey_ball.game_ball import GameBall
 from donkey_ball.level import Level
+from donkey_ball.game_ball import GameBall
+
 
 run = True
 paddle = Paddle()
@@ -18,6 +17,7 @@ paddle_group.add(paddle)
 ball_group = db.pygame.sprite.Group()
 ball_group.add(gb)
 
+
 def redrawGameWindow():
     db.win.fill((0, 0, 0))
     paddle_group.update()
@@ -29,7 +29,6 @@ def redrawGameWindow():
     level_1.brick_group.update()
     level_1.brick_group.draw(db.win)
 
-    #gb.draw_ball()
     sb.draw()
     db.pygame.display.update()
 
@@ -73,21 +72,6 @@ while run:
         print("Brick Collide")
     # Loop thru each block and figure out if it got hit
     '''
-    for block in level_1.blocks:
-        if block.y < gb.y < block.y + block.height and block.x < gb.x < block.x + block.width:
-            if gb.y == block.y:
-                print("Hit top of block")
-            elif gb.y == block.y + block.height:
-                print("Hit bottom of block")
-            elif gb.x == block.x:
-                print("Hit left of block")
-            elif gb.x == block.x + block.width:
-                print("Hit right of block")
-            else:
-                print(f"GB-x:{gb.x} GB-y:{gb.y} blockx:{block.x} blocky:{block.y} block-bottom:{block.y + block.height} ")
-            # db.ball_hit_sound.play()
-            level_1.remove_block(block)
-            gb.blocks_hit += 1
             if random.randint(1, 4) == 3:
                 gb.special_power = random.choice(['Thru Ball', 'Fire Ball', 'Something bad'])
     '''
