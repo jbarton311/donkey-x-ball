@@ -88,11 +88,22 @@ while run:
 
         hit_location = min(collide_dict, key=collide_dict.get)
 
-        if hit_location in ['left', 'right'] or collide_dict['left'] <= 8 or collide_dict['right'] <= 8:
-            print("Moving ball left or right")
+        # i THINK WE NEED TO CHECK THE VELOCITY OF THE Ball
+        # IF IT IS GOING RIGHT THEN IT CAN'T HIT THE RIGHT SIDE
+        if hit_location == 'left' and gb.x_direction == 1 and collide_dict['left'] <= 8:
             gb.x_direction = gb.x_direction * -1
-        elif hit_location in ['bottom', 'top']:
-            print("Moving ball up or down")
+        elif hit_location == 'right' and gb.x_direction == -1 and collide_dict['right'] <= 8:
+            gb.x_direction = gb.x_direction * -1
+
+        elif hit_location == 'top' and gb.y_direction == 1:
+            gb.y_direction = gb.y_direction * -1
+
+        elif hit_location == 'bottom' and gb.y_direction == -1:
+            gb.y_direction = gb.y_direction * -1
+
+        elif hit_location in ['left','right']:
+            gb.x_direction = gb.x_direction * -1
+        else:
             gb.y_direction = gb.y_direction * -1
 
         level_1.brick_group.remove(brick_collide)
