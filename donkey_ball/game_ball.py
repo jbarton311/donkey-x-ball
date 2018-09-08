@@ -1,13 +1,20 @@
 import donkey_ball as db
+import pygame
 
 
-class GameBall(object):
+class GameBall(pygame.sprite.Sprite):
     '''
     Main class for the game ball
     '''
     def __init__(self):
-        self.x = 200
-        self.y = db.window_height - 28
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.transform.scale(pygame.image.load("img/ball.png").convert_alpha(), [12, 12])
+        self.mask = pygame.mask.from_surface(self.image)
+        self.rect = self.image.get_rect()
+        self.image.set_colorkey((0, 0, 0))
+        self.rect.center = (db.window_width / 2, db.window_height  - 25)
+        self.rect.centerx= 200
+        self.rect.centery= db.window_height - 28
         self.x_direction = 1
         self.y_direction = 1
         self.y_slope = 0.5
@@ -21,6 +28,8 @@ class GameBall(object):
         self.lives = 3
         self.blocks_hit = 0
         self.special_power = None
+        self.x = 0
+        self.y = 0
 
     def lost_life(self):
         '''Function to reduce lives when ball passes paddle'''
@@ -41,13 +50,14 @@ class GameBall(object):
     def ready_new_life(self):
         '''Variables to set for a new life'''
         self.vel = 0
-        self.x = db.pygame.mouse.get_pos()[0] + 37
-        self.y = db.window_height - 28
+        self.rect.centerx = db.pygame.mouse.get_pos()[0] + 37
+        self.rect.centery= db.window_height - 28
         self.y_direction = -1
 
-    def draw_ball(self):
+    def update(self):
         '''Figure out where to draw the ball on the screen'''
-
+        self.x = self.rect.centerx
+        self.y = self.rect.centery
         # Do they still have lives left? If so, go to logic
         if self.still_alive_check():
 
@@ -61,20 +71,20 @@ class GameBall(object):
                 self.vel = 5
             # If not, make it stay on the paddle
             else:
-                self.x = db.pygame.mouse.get_pos()[0] + 37
+                self.rect.centerx, _ = db.pygame.mouse.get_pos()
 
             # Make sure ball stays within window
-            if self.x <= 5:
+            if self.rect.centerx <= 5:
                 self.x_direction = 1
-            elif self.x >= db.window_width - self.radius:
+            elif self.rect.centerx>= db.window_width - self.radius:
                 self.x_direction = -1
 
-            if self.y <= db.dividing_bar_y + db.dividing_bar_height:
+            if self.rect.centery<= db.dividing_bar_y + db.dividing_bar_height:
                 self.y_direction = 1
-            elif self.y >= db.window_height - self.radius:
+            elif self.rect.centery>= db.window_height - self.radius:
                 self.y_direction = -1
 
             # Make the ball move in the correct direction
-            self.x = self.x + (self.x_direction * self.vel)
-            self.y = int(self.y + (self.y_direction * self.vel) * self.y_slope)
-            db.pygame.draw.circle(db.win, self.color, (self.x, self.y), self.radius)
+            self.rect.centerx = self.rect.centerx + (self.x_direction * self.vel)
+            self.rect.centery = int(self.rect.centery + (self.y_direction * self.vel) * self.y_slope)
+            #db.pygame.draw.circle(db.win, self.color, (self.x, self.y), self.radius)
