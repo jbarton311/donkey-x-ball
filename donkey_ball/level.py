@@ -1,5 +1,5 @@
 from donkey_ball.block import Block
-
+import pygame
 
 class Level(object):
     '''
@@ -59,11 +59,15 @@ class Level(object):
                        t1, t2, t3, t4, t5, t6, t7, t8, t9, t10]
         self.level_name = "DBT"
 
-    def remove_block(self, block):
-        ''' Will remove a block from the list. Will use when a block gets hit'''
-        self.blocks.remove(block)
-        self.blocks_hit += 1
-        print(f"HIT BLOCK {block}! Hit count at {self.blocks_hit}")
+        self.brick_group = pygame.sprite.Group()
+        for block in self.blocks:
+            self.brick_group.add(block)
+
+
+    def score_calc(self):
+        self.blocks_hit = len(self.blocks) - len(self.brick_group)
+        return self.blocks_hit
+
 
     def string_level_name(self):
         return f"LEVEL: {self.level_name}"

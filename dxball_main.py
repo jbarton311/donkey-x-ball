@@ -18,7 +18,6 @@ paddle_group.add(paddle)
 ball_group = db.pygame.sprite.Group()
 ball_group.add(gb)
 
-
 def redrawGameWindow():
     db.win.fill((0, 0, 0))
     paddle_group.update()
@@ -27,11 +26,11 @@ def redrawGameWindow():
     ball_group.update()
     ball_group.draw(db.win)
 
+    level_1.brick_group.update()
+    level_1.brick_group.draw(db.win)
+
     #gb.draw_ball()
     sb.draw()
-
-    for block in level_1.blocks:
-        block.draw()
     db.pygame.display.update()
 
 
@@ -67,7 +66,13 @@ while run:
 
     # If the ball hits the paddle
 
+
+    brick_collide = pygame.sprite.spritecollide(gb, level_1.brick_group, True, pygame.sprite.collide_mask)
+    if brick_collide:
+        print(brick_collide)
+        print("Brick Collide")
     # Loop thru each block and figure out if it got hit
+    '''
     for block in level_1.blocks:
         if block.y < gb.y < block.y + block.height and block.x < gb.x < block.x + block.width:
             if gb.y == block.y:
@@ -85,7 +90,7 @@ while run:
             gb.blocks_hit += 1
             if random.randint(1, 4) == 3:
                 gb.special_power = random.choice(['Thru Ball', 'Fire Ball', 'Something bad'])
-
+    '''
     redrawGameWindow()
 
 print(f"Game ball hits: {gb.blocks_hit}")

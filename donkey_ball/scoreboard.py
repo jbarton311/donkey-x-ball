@@ -21,7 +21,7 @@ class Scoreboard():
         donkey_title = db.myfont.render("Donkey X Ball", 1, blue_text)
         db.win.blit(donkey_title, (db.window_width/2 - 50, 12))
         # Print Out Score
-        scoretext = db.myfont.render(f"SCORE: {self.game_ball.blocks_hit}", 1, red_text)
+        scoretext = db.myfont.render(f"SCORE: {self.level.score_calc()}", 1, red_text)
         db.win.blit(scoretext, (5, 12))
 
 
