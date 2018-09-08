@@ -19,3 +19,11 @@ class Block(pygame.sprite.Sprite):
 
     def __str__(self):
         return f"Block at ({self.x}, {self.y})"
+
+class RedBlock(Block):
+    '''
+    RedBlock
+    '''
+    def __init__(self, *args, **kwargs):
+        super(RedBlock, self).__init__(*args, **kwargs)
+        self.image = pygame.transform.scale(pygame.image.load("img/Red Brick for Donk.png").convert_alpha(), [40, 20])

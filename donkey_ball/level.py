@@ -1,4 +1,4 @@
-from donkey_ball.block import Block
+from donkey_ball.block import Block, RedBlock
 import pygame
 
 class Level(object):
@@ -11,8 +11,8 @@ class Level(object):
         b_color = (253, 255, 252)
         t_color = (231, 29, 54)
 
-        d1 = Block(100, 100, d_color)
-        d2 = Block(100, 150, d_color)
+        d1 = RedBlock(100, 100, d_color)
+        d2 = RedBlock(100, 150, d_color)
         d3 = Block(100, 200, d_color)
         d4 = Block(100, 250, d_color)
         d5 = Block(100, 300, d_color)
