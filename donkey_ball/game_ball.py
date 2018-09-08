@@ -68,7 +68,7 @@ class GameBall(pygame.sprite.Sprite):
             # If the ball is started make it move!
             if self.ball_started:
                 self.level_status = "Play ball, bro!"
-                self.vel = 10
+                self.vel = 5
             # If not, make it stay on the paddle
             else:
                 self.rect.centerx, _ = db.pygame.mouse.get_pos()

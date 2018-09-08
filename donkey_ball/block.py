@@ -17,7 +17,7 @@ class Block(pygame.sprite.Sprite):
         self.width = 40
 
     def __str__(self):
-        return f"Block at ({self.x}, {self.y})"
+        return f"Block at ({self.rect.left}, {self.rect.top})"
 
 class RedBlock(Block):
     '''

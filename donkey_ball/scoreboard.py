@@ -16,15 +16,11 @@ class Scoreboard():
         db.pygame.draw.rect(db.win, (33, 131, 128),
                            (0, db.dividing_bar_y, db.window_width, db.dividing_bar_height))
 
-
-
         donkey_title = db.myfont.render("Donkey X Ball", 1, blue_text)
         db.win.blit(donkey_title, (db.window_width/2 - 50, 12))
         # Print Out Score
         scoretext = db.myfont.render(f"SCORE: {self.level.score_calc()}", 1, red_text)
         db.win.blit(scoretext, (5, 12))
-
-
 
         # Print Out Level Name
         level_text = db.small_font.render(self.level.string_level_name(), 1, blue_text)
