@@ -8,7 +8,7 @@ class GameBall(pygame.sprite.Sprite):
     '''
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.transform.scale(pygame.image.load("img/ball.png").convert_alpha(), [12, 12])
+        self.image = pygame.transform.scale(pygame.image.load("img/ball.png").convert_alpha(), [10, 10])
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.image.set_colorkey((0, 0, 0))

@@ -88,7 +88,7 @@ while run:
 
         hit_location = min(collide_dict, key=collide_dict.get)
 
-        if hit_location in ['left', 'right'] or collide_dict['left'] <= 12 or collide_dict['right'] <= 12:
+        if hit_location in ['left', 'right'] or collide_dict['left'] <= 8 or collide_dict['right'] <= 8:
             print("Moving ball left or right")
             gb.x_direction = gb.x_direction * -1
         elif hit_location in ['bottom', 'top']:
