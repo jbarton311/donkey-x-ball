@@ -27,3 +27,12 @@ class RedBlock(Block):
     def __init__(self, *args, **kwargs):
         super(RedBlock, self).__init__(*args, **kwargs)
         self.image = pygame.transform.scale(pygame.image.load("img/Red Brick for Donk.png").convert_alpha(), [40, 20])
+
+
+class WhiteBlock(Block):
+    '''
+    RedBlock
+    '''
+    def __init__(self, *args, **kwargs):
+        super(WhiteBlock, self).__init__(*args, **kwargs)
+        self.image = pygame.transform.scale(pygame.image.load("img/White Brick for Donk.png").convert_alpha(), [40, 20])
