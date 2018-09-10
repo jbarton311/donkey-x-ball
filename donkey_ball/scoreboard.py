@@ -43,6 +43,6 @@ class Scoreboard():
         random_power = db.small_font.render(f"Power Up: {self.game_ball.special_power}", 1, (253, 255, 252))
         db.win.blit(random_power, (200, 12))
 
-        self.paddle.calc_mid_point()
+        self.paddle.update()
         paddle_mid = db.small_font.render(f"Paddle-mid: {self.paddle.paddle_mid}", 1, (253, 255, 252))
         db.win.blit(paddle_mid, (650, 12))

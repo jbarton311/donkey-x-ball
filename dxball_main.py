@@ -17,9 +17,10 @@ paddle_group.add(paddle)
 ball_group = db.pygame.sprite.Group()
 ball_group.add(gb)
 
+bg = pygame.image.load("img/space-2.jpg")
 
 def redrawGameWindow():
-    db.win.fill((0, 0, 0))
+    db.win.blit(bg, (0, 0))
     paddle_group.update()
     paddle_group.draw(db.win)
 
@@ -31,7 +32,6 @@ def redrawGameWindow():
 
     sb.draw()
     db.pygame.display.update()
-
 
 while run:
     # pygame.time.delay(100)
@@ -51,17 +51,28 @@ while run:
         gb.restart_game()
         level_1.restart_level()
 
-    collide = pygame.sprite.spritecollide(gb, paddle_group, False, pygame.sprite.collide_mask)
-    if collide:
-        gb.y_direction = gb.y_direction*-1
-        #print("BOOOOOOOOM")
-
     # If the ball gets within 15 pixels of the bottom we are saying that's an L
     if gb.y >= db.window_height - 5:
         gb.level_status = "YOU BLEW IT (Sandler voice)"
         gb.lost_life()
         gb.ball_started = False
         gb.new_life = True
+
+    collide = pygame.sprite.spritecollide(gb, paddle_group, False, pygame.sprite.collide_mask)
+    if collide:
+        ball_x_on_paddle = (gb.x - paddle.x) / paddle.width
+        print(ball_x_on_paddle)
+
+        print("SOMETHING HIT!")
+        gb.y_direction = gb.y_direction*-1
+
+        print(f"paddle.paddle_mid = {paddle.rect.centerx}, gb.x = {gb.x}")
+
+        if gb.x < paddle.rect.centerx:
+            gb.x_direction = -1
+        elif gb.x > paddle.rect.centerx:
+            gb.x_direction = 1
+
 
 
     brick_collide = pygame.sprite.spritecollide(gb, level_1.brick_group, False, pygame.sprite.collide_mask)

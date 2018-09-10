@@ -19,9 +19,7 @@ class Paddle(pygame.sprite.Sprite):
         self.vel = 20
         self.color = (193, 202, 214)
 
-    def calc_mid_point(self):
-        self.paddle_right_edge = self.x + self.width
-        self.paddle_mid = ((self.paddle_right_edge - self.x) / 2) + self.x
-
     def update(self):
         self.rect.centerx, _ = db.pygame.mouse.get_pos()
+        self.paddle_right_edge = self.rect.left + self.width
+        self.paddle_mid = ((self.paddle_right_edge - self.x) / 2) + self.x
