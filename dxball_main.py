@@ -33,19 +33,24 @@ def redrawGameWindow():
     sb.draw()
     db.pygame.display.update()
 
+
+good_collisions = 0
+bad_collision = 0
 while run:
+
     # pygame.time.delay(100)
     db.clock.tick(60)
+
+    keys = db.pygame.key.get_pressed()
 
     for event in db.pygame.event.get():
         if event.type == db.pygame.QUIT:
             run = False
+
         # Wait to start moving ball until a click
         if event.type == db.pygame.MOUSEBUTTONDOWN:
             if gb.still_alive and not gb.ball_started:
                 gb.ball_started = True
-
-    keys = db.pygame.key.get_pressed()
 
     if keys[db.pygame.K_SPACE] and gb.lives == 0:
         gb.restart_game()
@@ -73,18 +78,16 @@ while run:
         elif gb.x > paddle.rect.centerx:
             gb.x_direction = 1
 
-
-
     brick_collide = pygame.sprite.spritecollide(gb, level_1.brick_group, False, pygame.sprite.collide_mask)
+    ball_x, ball_y = gb.x, gb.y
     if brick_collide:
         hit_block = brick_collide[0]
         collide_dict = {}
-        ball_x, ball_y = gb.x, gb.y
         print(f"Ball location: X={ball_x}, Y={ball_y}")
-        print(hit_block.rect.left)
-        print(hit_block.rect.right)
-        print(hit_block.rect.top)
-        print(hit_block.rect.bottom)
+        #print(hit_block.rect.left)
+        #print(hit_block.rect.right)
+        #print(hit_block.rect.top)
+        #print(hit_block.rect.bottom)
 
         collide_dict['left'] = abs(hit_block.rect.left - ball_x)
         collide_dict['right'] = abs(hit_block.rect.right - ball_x)
@@ -92,10 +95,10 @@ while run:
         collide_dict['top'] = abs(hit_block.rect.top - ball_y)
         collide_dict['bottom'] = abs(hit_block.rect.bottom - ball_y)
 
-        print(f"FROM LEFT: {collide_dict['left']}")
-        print(f"FROM RIGHT: {collide_dict['right']}")
-        print(f"FROM TOP: {collide_dict['top']}")
-        print(f"FROM BOTTOM: {collide_dict['bottom']}")
+        #print(f"FROM LEFT: {collide_dict['left']}")
+        #print(f"FROM RIGHT: {collide_dict['right']}")
+        #print(f"FROM TOP: {collide_dict['top']}")
+        #print(f"FROM BOTTOM: {collide_dict['bottom']}")
 
         hit_location = min(collide_dict, key=collide_dict.get)
 
@@ -103,20 +106,24 @@ while run:
         # IF IT IS GOING RIGHT THEN IT CAN'T HIT THE RIGHT SIDE
         if hit_location == 'left' and gb.x_direction == 1 and collide_dict['left'] <= 8:
             gb.x_direction = gb.x_direction * -1
+            good_collisions += 1
         elif hit_location == 'right' and gb.x_direction == -1 and collide_dict['right'] <= 8:
             gb.x_direction = gb.x_direction * -1
-
+            good_collisions += 1
         elif hit_location == 'top' and gb.y_direction == 1:
             gb.y_direction = gb.y_direction * -1
-
+            good_collisions += 1
         elif hit_location == 'bottom' and gb.y_direction == -1:
             gb.y_direction = gb.y_direction * -1
-
+            good_collisions += 1
         elif hit_location in ['left','right']:
             gb.x_direction = gb.x_direction * -1
+            bad_collision += 1
+            print(collide_dict)
         else:
             gb.y_direction = gb.y_direction * -1
-
+            bad_collision += 1
+            print(collide_dict)
         level_1.brick_group.remove(brick_collide)
 
     '''
@@ -126,4 +133,5 @@ while run:
     redrawGameWindow()
 
 print(f"Game ball hits: {gb.blocks_hit}")
+print(f"Good collisions: {good_collisions}, Bad collisions: {bad_collision}")
 db.pygame.quit()
