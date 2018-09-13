@@ -5,6 +5,24 @@ from donkey_ball.scoreboard import Scoreboard
 from donkey_ball.level import Level
 from donkey_ball.game_ball import GameBall
 
+import logging
+
+# create logger
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+# create console handler and set level to debug
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+
+# create formatter
+formatter = logging.Formatter('%(asctime)s-%(levelname)s: %(message)s')
+
+# add formatter to ch
+ch.setFormatter(formatter)
+
+# add ch to logger
+logger.addHandler(ch)
 
 run = True
 paddle = Paddle()
@@ -90,12 +108,12 @@ while run:
     collide = pygame.sprite.spritecollide(gb, paddle_group, False, pygame.sprite.collide_mask)
     if collide:
         ball_x_on_paddle = (gb.x - paddle.x) / paddle.width
-        print(ball_x_on_paddle)
+        logger.debug(ball_x_on_paddle)
 
-        print("SOMETHING HIT!")
+        logger.debug("SOMETHING HIT!")
         gb.y_direction = gb.y_direction*-1
 
-        print(f"paddle.paddle_mid = {paddle.rect.centerx}, gb.x = {gb.x}")
+        logger.debug(f"paddle.paddle_mid = {paddle.rect.centerx}, gb.x = {gb.x}")
 
         if gb.x < paddle.rect.centerx:
             gb.x_direction = -1
@@ -107,11 +125,11 @@ while run:
     if brick_collide:
         hit_block = brick_collide[0]
         collide_dict = {}
-        print(f"Ball location: X={ball_x}, Y={ball_y}")
-        #print(hit_block.rect.left)
-        #print(hit_block.rect.right)
-        #print(hit_block.rect.top)
-        #print(hit_block.rect.bottom)
+        logger.debug(f"Ball location: X={ball_x}, Y={ball_y}")
+        #logger.debug(hit_block.rect.left)
+        #logger.debug(hit_block.rect.right)
+        #logger.debug(hit_block.rect.top)
+        #logger.debug(hit_block.rect.bottom)
 
         collide_dict['left'] = abs(hit_block.rect.left - ball_x)
         collide_dict['right'] = abs(hit_block.rect.right - ball_x)
@@ -119,10 +137,10 @@ while run:
         collide_dict['top'] = abs(hit_block.rect.top - ball_y)
         collide_dict['bottom'] = abs(hit_block.rect.bottom - ball_y)
 
-        #print(f"FROM LEFT: {collide_dict['left']}")
-        #print(f"FROM RIGHT: {collide_dict['right']}")
-        #print(f"FROM TOP: {collide_dict['top']}")
-        #print(f"FROM BOTTOM: {collide_dict['bottom']}")
+        #logger.debug(f"FROM LEFT: {collide_dict['left']}")
+        #logger.debug(f"FROM RIGHT: {collide_dict['right']}")
+        #logger.debug(f"FROM TOP: {collide_dict['top']}")
+        #logger.debug(f"FROM BOTTOM: {collide_dict['bottom']}")
 
         hit_location = min(collide_dict, key=collide_dict.get)
 
@@ -143,11 +161,11 @@ while run:
         elif hit_location in ['left','right']:
             gb.x_direction = gb.x_direction * -1
             bad_collision += 1
-            print(collide_dict)
+            logger.debug(collide_dict)
         else:
             gb.y_direction = gb.y_direction * -1
             bad_collision += 1
-            print(collide_dict)
+            logger.debug(collide_dict)
         level_1.brick_group.remove(brick_collide)
 
     '''
@@ -156,6 +174,6 @@ while run:
     '''
     redrawGameWindow()
 
-print(f"Game ball hits: {gb.blocks_hit}")
-print(f"Good collisions: {good_collisions}, Bad collisions: {bad_collision}")
+logger.debug(f"Game ball hits: {gb.blocks_hit}")
+logger.debug(f"Good collisions: {good_collisions}, Bad collisions: {bad_collision}")
 db.pygame.quit()
