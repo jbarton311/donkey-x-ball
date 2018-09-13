@@ -19,18 +19,38 @@ ball_group.add(gb)
 
 bg = pygame.image.load("img/space-2.jpg")
 
-def redrawGameWindow():
-    db.win.blit(bg, (0, 0))
+donkey_pic = pygame.image.load('img/main_donkey_logo.png')
+before_game = True
+
+def pregame_window():
+    db.win.fill((0, 0, 0))
     paddle_group.update()
     paddle_group.draw(db.win)
 
-    ball_group.update()
-    ball_group.draw(db.win)
+    font = pygame.font.Font(None, 36)
+    db.win.blit(donkey_pic, [300, 60])
 
-    level_1.brick_group.update()
-    level_1.brick_group.draw(db.win)
+    donkey_title = font.render("Welcome to Donkey-X Ball!", 1, (100, 100, 100))
+    db.win.blit(donkey_title, (370, 28))
 
-    sb.draw()
+    donkey_subtitle = font.render("Hit the space bar to start ya donk!", 1, (100, 100, 100))
+    db.win.blit(donkey_subtitle, (330, 550))
+
+def redrawGameWindow():
+
+    if before_game:
+        pregame_window()
+    else:
+        db.win.blit(bg, (0, 0))
+        paddle_group.update()
+        paddle_group.draw(db.win)
+        ball_group.update()
+        ball_group.draw(db.win)
+
+        level_1.brick_group.update()
+        level_1.brick_group.draw(db.win)
+
+        sb.draw()
     db.pygame.display.update()
 
 
@@ -42,6 +62,10 @@ while run:
     db.clock.tick(60)
 
     keys = db.pygame.key.get_pressed()
+
+    # If they are on welcome screen and they hit space, set game to start
+    if keys[db.pygame.K_SPACE] and before_game:
+        before_game = False
 
     for event in db.pygame.event.get():
         if event.type == db.pygame.QUIT:
