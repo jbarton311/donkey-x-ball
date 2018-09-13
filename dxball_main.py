@@ -126,6 +126,8 @@ while run:
         hit_block = brick_collide[0]
         collide_dict = {}
         logger.debug(f"Ball location: X={ball_x}, Y={ball_y}")
+        logger.debug(f"Ball DIRECTION: X={gb.x_direction}, Y={gb.y_direction}")
+
         #logger.debug(hit_block.rect.left)
         #logger.debug(hit_block.rect.right)
         #logger.debug(hit_block.rect.top)
@@ -146,26 +148,44 @@ while run:
 
         # i THINK WE NEED TO CHECK THE VELOCITY OF THE Ball
         # IF IT IS GOING RIGHT THEN IT CAN'T HIT THE RIGHT SIDE
-        if hit_location == 'left' and gb.x_direction == 1 and collide_dict['left'] <= 8:
-            gb.x_direction = gb.x_direction * -1
-            good_collisions += 1
-        elif hit_location == 'right' and gb.x_direction == -1 and collide_dict['right'] <= 8:
-            gb.x_direction = gb.x_direction * -1
-            good_collisions += 1
-        elif hit_location == 'top' and gb.y_direction == 1:
-            gb.y_direction = gb.y_direction * -1
-            good_collisions += 1
-        elif hit_location == 'bottom' and gb.y_direction == -1:
-            gb.y_direction = gb.y_direction * -1
-            good_collisions += 1
-        elif hit_location in ['left','right']:
-            gb.x_direction = gb.x_direction * -1
-            bad_collision += 1
-            logger.debug(collide_dict)
+
+        if gb.x_direction == 1 and gb.y_direction == -1:
+            trimmed_dict = {your_key: collide_dict[your_key] for your_key in ['left', 'bottom']}
+            hit = min(trimmed_dict, key=trimmed_dict.get)
+            if hit == 'left':
+                gb.x_direction *= -1
+            elif hit == 'bottom':
+                gb.y_direction *= -1
+            logger.info("BOOM 1")
+        elif gb.x_direction == -1 and gb.y_direction == -1:
+            trimmed_dict = {your_key: collide_dict[your_key] for your_key in ['right', 'bottom']}
+            hit = min(trimmed_dict, key=trimmed_dict.get)
+            if hit == 'right':
+                gb.x_direction *= -1
+            elif hit == 'bottom':
+                gb.y_direction *= -1
+            logger.info("BOOM 2")
+        elif gb.x_direction == 1 and gb.y_direction == 1:
+            trimmed_dict = {your_key: collide_dict[your_key] for your_key in ['left', 'top']}
+            hit = min(trimmed_dict, key=trimmed_dict.get)
+            if hit == 'left':
+                gb.x_direction *= -1
+            elif hit == 'top':
+                gb.y_direction *= -1
+                logger.info("BOOM 3")
+        elif gb.x_direction == -1 and gb.y_direction == 1:
+            trimmed_dict = {your_key: collide_dict[your_key] for your_key in ['right', 'top']}
+            hit = min(trimmed_dict, key=trimmed_dict.get)
+            if hit == 'right':
+                gb.x_direction *= -1
+            elif hit == 'top':
+                gb.y_direction *= -1
+            logger.info("BOOM 4")
         else:
-            gb.y_direction = gb.y_direction * -1
-            bad_collision += 1
-            logger.debug(collide_dict)
+            logger.debug("BAD COLLISION WHAT THE HELL")
+        logger.debug(f"Collide Dict: {collide_dict}")
+        logger.debug(f"Trimmed Dict: {trimmed_dict}")
+        logger.debug(f"Hit: {hit}")
         level_1.brick_group.remove(brick_collide)
 
     '''
