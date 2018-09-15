@@ -1,6 +1,7 @@
 import donkey_ball as db
 import pygame
-
+import math
+from vectors import Vector
 
 class GameBall(pygame.sprite.Sprite):
     '''
@@ -12,14 +13,17 @@ class GameBall(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.image.set_colorkey((0, 0, 0))
-        self.rect.center = (db.window_width / 2, db.window_height  - 25)
-        self.rect.centerx= 200
-        self.rect.centery= db.window_height - 28
+        self.rect.center = (db.window_width / 2, db.window_height - 25)
+        self.rect.centerx = 200
+        self.rect.centery = db.window_height - 28
         self.x_direction = 1
         self.y_direction = 1
-        self.y_slope = 0.5
+        self.x = 0
+        self.y = 0
+
         self.radius = 5
         self.vel = 0
+        self.angle = 50
         self.color = (32, 252, 143)
         self.ball_started = False
         self.still_alive = True
@@ -28,8 +32,7 @@ class GameBall(pygame.sprite.Sprite):
         self.lives = 3
         self.blocks_hit = 0
         self.special_power = None
-        self.x = 0
-        self.y = 0
+
 
     def lost_life(self):
         '''Function to reduce lives when ball passes paddle'''
@@ -53,6 +56,11 @@ class GameBall(pygame.sprite.Sprite):
         self.rect.centerx = db.pygame.mouse.get_pos()[0] + 37
         self.rect.centery= db.window_height - 28
         self.y_direction = -1
+
+    def ball_movement_update(self):
+        self.vector = Vector(self.vel, self.angle)
+        self.rect.centerx += self.vector.getx() * self.x_direction
+        self.rect.centery += self.vector.gety() * self.y_direction
 
     def update(self):
         '''Figure out where to draw the ball on the screen'''
@@ -85,6 +93,7 @@ class GameBall(pygame.sprite.Sprite):
                 self.y_direction = -1
 
             # Make the ball move in the correct direction
-            self.rect.centerx = self.rect.centerx + (self.x_direction * self.vel)
-            self.rect.centery = int(self.rect.centery + (self.y_direction * self.vel) * self.y_slope)
-            #db.pygame.draw.circle(db.win, self.color, (self.x, self.y), self.radius)
+
+            self.ball_movement_update()
+            #self.rect.centerx = self.rect.centerx + (self.x_direction * self.vel)
+            #self.rect.centery = self.rect.centery + (self.y_direction * self.vel)

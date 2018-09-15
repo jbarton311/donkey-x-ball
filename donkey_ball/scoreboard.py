@@ -14,7 +14,7 @@ class Scoreboard():
         x_right_side_align = db.window_width - 150
         # Set up dividing bar between scoreboard and game
         db.pygame.draw.rect(db.win, (33, 131, 128),
-                           (0, db.dividing_bar_y, db.window_width, db.dividing_bar_height))
+                            (0, db.dividing_bar_y, db.window_width, db.dividing_bar_height))
 
         donkey_title = db.myfont.render("Donkey X Ball", 1, blue_text)
         db.win.blit(donkey_title, (db.window_width/2 - 50, 12))
@@ -44,5 +44,5 @@ class Scoreboard():
         db.win.blit(random_power, (200, 12))
 
         self.paddle.update()
-        paddle_mid = db.small_font.render(f"Paddle-mid: {self.paddle.paddle_mid}", 1, (253, 255, 252))
+        paddle_mid = db.small_font.render(f"Paddle-mid: {self.paddle.rect.centerx}", 1, (253, 255, 252))
         db.win.blit(paddle_mid, (650, 12))
