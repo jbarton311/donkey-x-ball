@@ -124,19 +124,24 @@ while run:
         if gb.rect.centerx <= paddle.rect.centerx:
             logger.info(f"SLOPE FACTOR: {ball_x_on_paddle}")
             gb.x_direction = -1
-            if ball_x_on_paddle <= 0.25:
-                gb.angle = 30
-            else:
-                gb.angle = 60
         elif gb.rect.centerx > paddle.rect.centerx:
             ball_x_on_paddle = 1 - ball_x_on_paddle
             logger.info(f"SLOPE FACTOR: {ball_x_on_paddle}")
             gb.x_direction = 1
-            if ball_x_on_paddle <= 0.25:
-                gb.angle = 30
-            else:
-                gb.angle = 60
 
+        # Control angle that ball leaves paddle with
+        if ball_x_on_paddle <= 0.10:
+            gb.angle = 25
+        elif ball_x_on_paddle <= 0.20:
+            gb.angle = 40
+        elif ball_x_on_paddle <= 0.30:
+            gb.angle = 55
+        elif ball_x_on_paddle <= 0.40:
+            gb.angle = 70
+        else:
+            gb.angle = 80
+
+        logger.info(f"Leaving paddle with an angle of {gb.angle}")
     brick_collide = pygame.sprite.spritecollide(gb, level_1.brick_group, False, pygame.sprite.collide_mask)
     ball_x, ball_y = gb.x, gb.y
     if brick_collide:
