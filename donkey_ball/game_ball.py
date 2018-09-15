@@ -1,6 +1,5 @@
 import donkey_ball as db
 import pygame
-import math
 from vectors import Vector
 
 class GameBall(pygame.sprite.Sprite):
@@ -58,6 +57,10 @@ class GameBall(pygame.sprite.Sprite):
         self.y_direction = -1
 
     def ball_movement_update(self):
+        '''
+        Use the custom vector class to calculate how much to move x and y
+        based on an magnitude and angle
+        '''
         self.vector = Vector(self.vel, self.angle)
         self.rect.centerx += self.vector.getx() * self.x_direction
         self.rect.centery += self.vector.gety() * self.y_direction
@@ -93,7 +96,4 @@ class GameBall(pygame.sprite.Sprite):
                 self.y_direction = -1
 
             # Make the ball move in the correct direction
-
             self.ball_movement_update()
-            #self.rect.centerx = self.rect.centerx + (self.x_direction * self.vel)
-            #self.rect.centery = self.rect.centery + (self.y_direction * self.vel)

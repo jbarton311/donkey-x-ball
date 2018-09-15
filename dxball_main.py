@@ -5,7 +5,6 @@ from donkey_ball.scoreboard import Scoreboard
 from donkey_ball.level import Level
 from donkey_ball.game_ball import GameBall
 import logging
-import random
 
 # create logger
 logger = logging.getLogger(__name__)
@@ -41,6 +40,7 @@ bg = pygame.transform.scale(bg, (db.window_width, db.window_height))
 
 donkey_pic = pygame.image.load('img/main_donkey_logo.png')
 before_game = True
+pygame.mouse.set_visible(False)
 
 def pregame_window():
     '''
@@ -58,6 +58,7 @@ def pregame_window():
 
     donkey_subtitle = font.render("Hit the space bar to start ya donk!", 1, (100, 100, 100))
     db.win.blit(donkey_subtitle, (330, 550))
+
 
 def redrawGameWindow():
 
@@ -130,7 +131,7 @@ while run:
             gb.x_direction = 1
 
         # Control angle that ball leaves paddle with
-        if ball_x_on_paddle <= 0.10:
+        if ball_x_on_paddle <= 0.05:
             gb.angle = 25
         elif ball_x_on_paddle <= 0.20:
             gb.angle = 40
@@ -142,6 +143,7 @@ while run:
             gb.angle = 80
 
         logger.info(f"Leaving paddle with an angle of {gb.angle}")
+
     brick_collide = pygame.sprite.spritecollide(gb, level_1.brick_group, False, pygame.sprite.collide_mask)
     ball_x, ball_y = gb.x, gb.y
     if brick_collide:
@@ -150,34 +152,29 @@ while run:
         logger.debug(f"Ball location: X={ball_x}, Y={ball_y}")
         logger.debug(f"Ball DIRECTION: X={gb.x_direction}, Y={gb.y_direction}")
 
-        #logger.debug(hit_block.rect.left)
-        #logger.debug(hit_block.rect.right)
-        #logger.debug(hit_block.rect.top)
-        #logger.debug(hit_block.rect.bottom)
-
         collide_dict['left'] = abs(hit_block.rect.left - ball_x)
         collide_dict['right'] = abs(hit_block.rect.right - ball_x)
 
         collide_dict['top'] = abs(hit_block.rect.top - ball_y)
         collide_dict['bottom'] = abs(hit_block.rect.bottom - ball_y)
 
-        #logger.debug(f"FROM LEFT: {collide_dict['left']}")
-        #logger.debug(f"FROM RIGHT: {collide_dict['right']}")
-        #logger.debug(f"FROM TOP: {collide_dict['top']}")
-        #logger.debug(f"FROM BOTTOM: {collide_dict['bottom']}")
-
         hit_location = min(collide_dict, key=collide_dict.get)
 
-        # i THINK WE NEED TO CHECK THE VELOCITY OF THE Ball
-        # IF IT IS GOING RIGHT THEN IT CAN'T HIT THE RIGHT SIDE
-
+        # Check the direction of the ball
+        # we should limit options to only 2 logical options based on direction
+        # of ball
         if gb.x_direction == 1 and gb.y_direction == -1:
+            # Only keep 2 logical values from dictionary
             trimmed_dict = {your_key: collide_dict[your_key] for your_key in ['left', 'bottom']}
+            # Determine the min hit side
             hit = min(trimmed_dict, key=trimmed_dict.get)
+
             if hit == 'left':
                 gb.x_direction *= -1
             elif hit == 'bottom':
                 gb.y_direction *= -1
+
+            # Helpful to see which clause it hit
             logger.info("BOOM 1")
         elif gb.x_direction == -1 and gb.y_direction == -1:
             trimmed_dict = {your_key: collide_dict[your_key] for your_key in ['right', 'bottom']}
@@ -205,6 +202,7 @@ while run:
             logger.info("BOOM 4")
         else:
             logger.debug("BAD COLLISION WHAT THE HELL")
+
         logger.debug(f"Collide Dict: {collide_dict}")
         logger.debug(f"Trimmed Dict: {trimmed_dict}")
         logger.debug(f"Hit: {hit}")
