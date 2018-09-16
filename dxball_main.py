@@ -59,8 +59,8 @@ def pregame_window():
     donkey_subtitle = font.render("Hit the space bar to start ya donk!", 1, (100, 100, 100))
     db.win.blit(donkey_subtitle, (330, 550))
 
-
 def redrawGameWindow():
+
 
     if before_game:
         pregame_window()
@@ -207,6 +207,14 @@ while run:
         logger.debug(f"Trimmed Dict: {trimmed_dict}")
         logger.debug(f"Hit: {hit}")
         level_1.brick_group.remove(brick_collide)
+        logger.info(f"Level score: {level_1.score_calc()}")
+        if level_1.score_calc() % 2 == 0:
+            logger.info("SPEEDING UP")
+            logger.info(f"GB VEL: {gb.vel}")
+            gb.vel *= 1.02
+            logger.info(f"GB VEL: {gb.vel}")
+        else:
+            logger.info("no speed")
 
     '''
             if random.randint(1, 4) == 3:

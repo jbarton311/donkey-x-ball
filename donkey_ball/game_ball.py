@@ -31,7 +31,7 @@ class GameBall(pygame.sprite.Sprite):
         self.lives = 3
         self.blocks_hit = 0
         self.special_power = None
-
+        self.in_play = False
 
     def lost_life(self):
         '''Function to reduce lives when ball passes paddle'''
@@ -52,6 +52,7 @@ class GameBall(pygame.sprite.Sprite):
     def ready_new_life(self):
         '''Variables to set for a new life'''
         self.vel = 0
+        self.in_play = False
         self.rect.centerx = db.pygame.mouse.get_pos()[0] + 37
         self.rect.centery= db.window_height - 28
         self.y_direction = -1
@@ -76,13 +77,15 @@ class GameBall(pygame.sprite.Sprite):
             if self.new_life and not self.ball_started:
                 self.ready_new_life()
 
-            # If the ball is started make it move!
-            if self.ball_started:
-                self.level_status = "Play ball, bro!"
-                self.vel = 5
-            # If not, make it stay on the paddle
-            else:
-                self.rect.centerx, _ = db.pygame.mouse.get_pos()
+            if self.in_play is False:
+                # If the ball is started make it move!
+                if self.ball_started:
+                    self.level_status = "Play ball, bro!"
+                    self.vel = 5
+                    self.in_play = True
+                # If not, make it stay on the paddle
+                else:
+                    self.rect.centerx, _ = db.pygame.mouse.get_pos()
 
             # Make sure ball stays within window
             if self.rect.centerx <= 5:
