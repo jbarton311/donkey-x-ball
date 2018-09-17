@@ -205,6 +205,16 @@ def collision_ball_brick():
         else:
             logger.info("no speed")
 
+
+def collision_ball_too_low():
+    # If the ball gets within 5 pixels of the bottom we are saying that's an L
+    if gb.y >= db.window_height - 5:
+        gb.level_status = "YOU BLEW IT (Sandler voice)"
+        gb.lost_life()
+        gb.ball_started = False
+        gb.new_life = True
+
+
 while run:
 
     # pygame.time.delay(100)
@@ -229,13 +239,8 @@ while run:
         gb.restart_game()
         level_1.restart_level()
 
-    # If the ball gets within 5 pixels of the bottom we are saying that's an L
-    if gb.y >= db.window_height - 5:
-        gb.level_status = "YOU BLEW IT (Sandler voice)"
-        gb.lost_life()
-        gb.ball_started = False
-        gb.new_life = True
-
+        
+    collision_ball_too_low()
     collision_ball_paddle()
     collision_ball_brick()
 
