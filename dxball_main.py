@@ -23,28 +23,35 @@ ch.setFormatter(formatter)
 # add ch to logger
 logger.addHandler(ch)
 
+# Initialize all of our donkey objects
 run = True
+
+# Have to set up sprite groups for pixel-perfect collision detection
 paddle = Paddle()
+paddle_group = db.pygame.sprite.Group()
+paddle_group.add(paddle)
+
 gb = GameBall()
 level_1 = Level()
 sb = Scoreboard(gb, level_1, paddle)
-paddle_group = db.pygame.sprite.Group()
-paddle_group.add(paddle)
 
 ball_group = db.pygame.sprite.Group()
 ball_group.add(gb)
 
+# Load background for the game
 bg = pygame.image.load("img/space-2.jpg")
 bg = pygame.transform.scale(bg, (db.window_width, db.window_height))
 
-
+# Set up welcome screen data
 donkey_pic = pygame.image.load('img/main_donkey_logo.png')
 before_game = True
+
+# Hide the mouse on the screen
 pygame.mouse.set_visible(False)
 
 def pregame_window():
     '''
-    Window to display before the player has started playing
+    Window to display before the player has started playing (welcome screen)
     '''
     db.win.fill((0, 0, 0))
     paddle_group.update()
@@ -60,7 +67,9 @@ def pregame_window():
     db.win.blit(donkey_subtitle, (330, 550))
 
 def redrawGameWindow():
-
+    '''
+    Draw all of our blits on the window
+    '''
 
     if before_game:
         pregame_window()
@@ -78,50 +87,22 @@ def redrawGameWindow():
     db.pygame.display.update()
 
 
-good_collisions = 0
-bad_collision = 0
-while run:
-
-    # pygame.time.delay(100)
-    db.clock.tick(60)
-
-    keys = db.pygame.key.get_pressed()
-
-    # If they are on welcome screen and they hit space, set game to start
-    if keys[db.pygame.K_SPACE] and before_game:
-        before_game = False
-
-    for event in db.pygame.event.get():
-        if event.type == db.pygame.QUIT:
-            run = False
-
-        # Wait to start moving ball until a click
-        if event.type == db.pygame.MOUSEBUTTONDOWN:
-            if gb.still_alive and not gb.ball_started:
-                gb.ball_started = True
-
-    if keys[db.pygame.K_SPACE] and gb.lives == 0:
-        gb.restart_game()
-        level_1.restart_level()
-
-    # If the ball gets within 15 pixels of the bottom we are saying that's an L
-    if gb.y >= db.window_height - 5:
-        gb.level_status = "YOU BLEW IT (Sandler voice)"
-        gb.lost_life()
-        gb.ball_started = False
-        gb.new_life = True
-
+def collision_ball_paddle():
+    # Collision between ball and paddle
     collide = pygame.sprite.spritecollide(gb, paddle_group, False, pygame.sprite.collide_mask)
     if collide:
+
+        # Determine where the ball lands on the paddle (%)
         ball_x_on_paddle = (gb.rect.left - paddle.rect.left) / paddle.width
         logger.info(f"gb.rect.left = {gb.rect.left}, paddle.x = {paddle.rect.left}, paddle.width = {paddle.width}")
         logger.info(f"Ball X on paddle: {ball_x_on_paddle}")
 
-        logger.debug("SOMETHING HIT!")
+        # Move the ball up off the paddle
         gb.y_direction = gb.y_direction*-1
 
         logger.debug(f"paddle.paddle_mid = {paddle.rect.centerx}, gb.x = {gb.x}")
 
+        # If it hits on the left send it to the left - same for right
         if gb.rect.centerx <= paddle.rect.centerx:
             logger.info(f"SLOPE FACTOR: {ball_x_on_paddle}")
             gb.x_direction = -1
@@ -140,21 +121,26 @@ while run:
         elif ball_x_on_paddle <= 0.40:
             gb.angle = 70
         else:
-            gb.angle = 80
+            gb.angle = 85
 
         logger.info(f"Leaving paddle with an angle of {gb.angle}")
 
+
+def collision_ball_brick():
+    # Collision between ball and a brick
     brick_collide = pygame.sprite.spritecollide(gb, level_1.brick_group, False, pygame.sprite.collide_mask)
     ball_x, ball_y = gb.x, gb.y
     if brick_collide:
+        # This allows us to store the Block object in a variable
         hit_block = brick_collide[0]
+
+        # Initialize a collide_dict to determine where it hit
         collide_dict = {}
         logger.debug(f"Ball location: X={ball_x}, Y={ball_y}")
         logger.debug(f"Ball DIRECTION: X={gb.x_direction}, Y={gb.y_direction}")
 
         collide_dict['left'] = abs(hit_block.rect.left - ball_x)
         collide_dict['right'] = abs(hit_block.rect.right - ball_x)
-
         collide_dict['top'] = abs(hit_block.rect.top - ball_y)
         collide_dict['bottom'] = abs(hit_block.rect.bottom - ball_y)
 
@@ -203,11 +189,14 @@ while run:
         else:
             logger.debug("BAD COLLISION WHAT THE HELL")
 
+        # Lot of debug statements here
         logger.debug(f"Collide Dict: {collide_dict}")
         logger.debug(f"Trimmed Dict: {trimmed_dict}")
         logger.debug(f"Hit: {hit}")
         level_1.brick_group.remove(brick_collide)
         logger.info(f"Level score: {level_1.score_calc()}")
+
+        # Speed up the ball every other brick they hit
         if level_1.score_calc() % 2 == 0:
             logger.info("SPEEDING UP")
             logger.info(f"GB VEL: {gb.vel}")
@@ -216,12 +205,47 @@ while run:
         else:
             logger.info("no speed")
 
+while run:
+
+    # pygame.time.delay(100)
+    db.clock.tick(60)
+
+    keys = db.pygame.key.get_pressed()
+
+    # If they are on welcome screen and they hit space, set game to start
+    if keys[db.pygame.K_SPACE] and before_game:
+        before_game = False
+
+    for event in db.pygame.event.get():
+        if event.type == db.pygame.QUIT:
+            run = False
+
+        # Wait to start moving ball until a click
+        if event.type == db.pygame.MOUSEBUTTONDOWN:
+            if gb.still_alive and not gb.ball_started:
+                gb.ball_started = True
+
+    if keys[db.pygame.K_SPACE] and gb.lives == 0:
+        gb.restart_game()
+        level_1.restart_level()
+
+    # If the ball gets within 5 pixels of the bottom we are saying that's an L
+    if gb.y >= db.window_height - 5:
+        gb.level_status = "YOU BLEW IT (Sandler voice)"
+        gb.lost_life()
+        gb.ball_started = False
+        gb.new_life = True
+
+    collision_ball_paddle()
+    collision_ball_brick()
+
     '''
+            # Work on special powers
             if random.randint(1, 4) == 3:
                 gb.special_power = random.choice(['Thru Ball', 'Fire Ball', 'Something bad'])
     '''
     redrawGameWindow()
 
 logger.debug(f"Game ball hits: {gb.blocks_hit}")
-logger.debug(f"Good collisions: {good_collisions}, Bad collisions: {bad_collision}")
+
 db.pygame.quit()

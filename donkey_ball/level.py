@@ -25,8 +25,8 @@ class Level(object):
 
         b1 = WhiteBlock(400, 100)
         b2 = WhiteBlock(400, 150)
-        b3 = WhiteBlock(400, 200)
         b4 = WhiteBlock(400, 250)
+        b3 = WhiteBlock(400, 200)
         b5 = WhiteBlock(400, 300)
         b6 = WhiteBlock(400, 350)
         b7 = WhiteBlock(475, 350)
