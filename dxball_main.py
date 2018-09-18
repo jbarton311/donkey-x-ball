@@ -5,6 +5,7 @@ from donkey_ball.scoreboard import Scoreboard
 from donkey_ball.level import Level
 from donkey_ball.game_ball import GameBall
 import logging
+import random
 
 # create logger
 logger = logging.getLogger(__name__)
@@ -49,6 +50,7 @@ before_game = True
 # Hide the mouse on the screen
 pygame.mouse.set_visible(False)
 
+
 def pregame_window():
     '''
     Window to display before the player has started playing (welcome screen)
@@ -65,6 +67,7 @@ def pregame_window():
 
     donkey_subtitle = font.render("Hit the space bar to start ya donk!", 1, (100, 100, 100))
     db.win.blit(donkey_subtitle, (330, 550))
+
 
 def redrawGameWindow():
     '''
@@ -126,6 +129,55 @@ def collision_ball_paddle():
         logger.info(f"Leaving paddle with an angle of {gb.angle}")
 
 
+def collision_ball_brick_standard(collide_dict):
+    # Check the direction of the ball
+    # we should limit options to only 2 logical options based on direction
+    # of ball
+    if gb.x_direction == 1 and gb.y_direction == -1:
+        # Only keep 2 logical values from dictionary
+        trimmed_dict = {your_key: collide_dict[your_key] for your_key in ['left', 'bottom']}
+        # Determine the min hit side
+        hit = min(trimmed_dict, key=trimmed_dict.get)
+
+        if hit == 'left':
+            gb.x_direction *= -1
+        elif hit == 'bottom':
+            gb.y_direction *= -1
+
+        # Helpful to see which clause it hit
+        logger.info("BOOM 1")
+    elif gb.x_direction == -1 and gb.y_direction == -1:
+        trimmed_dict = {your_key: collide_dict[your_key] for your_key in ['right', 'bottom']}
+        hit = min(trimmed_dict, key=trimmed_dict.get)
+        if hit == 'right':
+            gb.x_direction *= -1
+        elif hit == 'bottom':
+            gb.y_direction *= -1
+        logger.info("BOOM 2")
+    elif gb.x_direction == 1 and gb.y_direction == 1:
+        trimmed_dict = {your_key: collide_dict[your_key] for your_key in ['left', 'top']}
+        hit = min(trimmed_dict, key=trimmed_dict.get)
+        if hit == 'left':
+            gb.x_direction *= -1
+        elif hit == 'top':
+            gb.y_direction *= -1
+            logger.info("BOOM 3")
+    elif gb.x_direction == -1 and gb.y_direction == 1:
+        trimmed_dict = {your_key: collide_dict[your_key] for your_key in ['right', 'top']}
+        hit = min(trimmed_dict, key=trimmed_dict.get)
+        if hit == 'right':
+            gb.x_direction *= -1
+        elif hit == 'top':
+            gb.y_direction *= -1
+        logger.info("BOOM 4")
+    else:
+        logger.debug("BAD COLLISION WHAT THE HELL")
+
+    # Lot of debug statements here
+    logger.debug(f"Collide Dict: {collide_dict}")
+    logger.debug(f"Trimmed Dict: {trimmed_dict}")
+    logger.debug(f"Hit: {hit}")
+
 def collision_ball_brick():
     # Collision between ball and a brick
     brick_collide = pygame.sprite.spritecollide(gb, level_1.brick_group, False, pygame.sprite.collide_mask)
@@ -144,63 +196,29 @@ def collision_ball_brick():
         collide_dict['top'] = abs(hit_block.rect.top - ball_y)
         collide_dict['bottom'] = abs(hit_block.rect.bottom - ball_y)
 
-        hit_location = min(collide_dict, key=collide_dict.get)
-
-        # Check the direction of the ball
-        # we should limit options to only 2 logical options based on direction
-        # of ball
-        if gb.x_direction == 1 and gb.y_direction == -1:
-            # Only keep 2 logical values from dictionary
-            trimmed_dict = {your_key: collide_dict[your_key] for your_key in ['left', 'bottom']}
-            # Determine the min hit side
-            hit = min(trimmed_dict, key=trimmed_dict.get)
-
-            if hit == 'left':
-                gb.x_direction *= -1
-            elif hit == 'bottom':
-                gb.y_direction *= -1
-
-            # Helpful to see which clause it hit
-            logger.info("BOOM 1")
-        elif gb.x_direction == -1 and gb.y_direction == -1:
-            trimmed_dict = {your_key: collide_dict[your_key] for your_key in ['right', 'bottom']}
-            hit = min(trimmed_dict, key=trimmed_dict.get)
-            if hit == 'right':
-                gb.x_direction *= -1
-            elif hit == 'bottom':
-                gb.y_direction *= -1
-            logger.info("BOOM 2")
-        elif gb.x_direction == 1 and gb.y_direction == 1:
-            trimmed_dict = {your_key: collide_dict[your_key] for your_key in ['left', 'top']}
-            hit = min(trimmed_dict, key=trimmed_dict.get)
-            if hit == 'left':
-                gb.x_direction *= -1
-            elif hit == 'top':
-                gb.y_direction *= -1
-                logger.info("BOOM 3")
-        elif gb.x_direction == -1 and gb.y_direction == 1:
-            trimmed_dict = {your_key: collide_dict[your_key] for your_key in ['right', 'top']}
-            hit = min(trimmed_dict, key=trimmed_dict.get)
-            if hit == 'right':
-                gb.x_direction *= -1
-            elif hit == 'top':
-                gb.y_direction *= -1
-            logger.info("BOOM 4")
+        if gb.special_power == 'Thru Ball':
+            pass
         else:
-            logger.debug("BAD COLLISION WHAT THE HELL")
+            collision_ball_brick_standard(collide_dict)
 
-        # Lot of debug statements here
-        logger.debug(f"Collide Dict: {collide_dict}")
-        logger.debug(f"Trimmed Dict: {trimmed_dict}")
-        logger.debug(f"Hit: {hit}")
+        if gb.special_power == 'Fast Ball':
+            # Increase velocity and then set power to none
+            # we only want to increase speed once
+            gb.vel *= 1.3
+            gb.special_power = None
+
+        if gb.special_power == 'Slow Ball':
+            gb.vel *= 0.7
+            gb.special_power = None
         level_1.brick_group.remove(brick_collide)
         logger.info(f"Level score: {level_1.score_calc()}")
 
+        create_power()
         # Speed up the ball every other brick they hit
         if level_1.score_calc() % 2 == 0:
             logger.info("SPEEDING UP")
             logger.info(f"GB VEL: {gb.vel}")
-            gb.vel *= 1.02
+            gb.vel += .02
             logger.info(f"GB VEL: {gb.vel}")
         else:
             logger.info("no speed")
@@ -213,6 +231,13 @@ def collision_ball_too_low():
         gb.lost_life()
         gb.ball_started = False
         gb.new_life = True
+
+
+def create_power():
+    # Work on special powers
+    if random.randint(1, 3) == 3:
+        gb.special_power = random.choice(['Thru Ball', 'Slow Ball', 'Fast Ball'])
+    return gb.special_power
 
 
 while run:
@@ -239,16 +264,11 @@ while run:
         gb.restart_game()
         level_1.restart_level()
 
-        
+
     collision_ball_too_low()
     collision_ball_paddle()
     collision_ball_brick()
 
-    '''
-            # Work on special powers
-            if random.randint(1, 4) == 3:
-                gb.special_power = random.choice(['Thru Ball', 'Fire Ball', 'Something bad'])
-    '''
     redrawGameWindow()
 
 logger.debug(f"Game ball hits: {gb.blocks_hit}")

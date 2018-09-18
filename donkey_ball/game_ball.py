@@ -8,7 +8,8 @@ class GameBall(pygame.sprite.Sprite):
     '''
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.transform.scale(pygame.image.load("img/ball.png").convert_alpha(), [10, 10])
+        self.ball_size = [10, 10]
+        self.image = pygame.transform.scale(pygame.image.load("img/ball.png").convert_alpha(), self.ball_size)
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.image.set_colorkey((0, 0, 0))
@@ -68,6 +69,7 @@ class GameBall(pygame.sprite.Sprite):
 
     def update(self):
         '''Figure out where to draw the ball on the screen'''
+        
         self.x = self.rect.centerx
         self.y = self.rect.centery
         # Do they still have lives left? If so, go to logic
