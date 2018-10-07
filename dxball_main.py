@@ -1,11 +1,12 @@
 import pygame
+import logging
+import random
+
 import donkey_ball as db
 from donkey_ball.paddle import Paddle
 from donkey_ball.scoreboard import Scoreboard
 from donkey_ball.level import Level
 from donkey_ball.game_ball import GameBall
-import logging
-import random
 
 # create logger
 logger = logging.getLogger(__name__)
@@ -41,10 +42,10 @@ ball_group.add(gb)
 
 # Load background for the game
 bg = pygame.image.load("img/space-2.jpg")
-bg = pygame.transform.scale(bg, (db.window_width, db.window_height))
+bg = pygame.transform.scale(bg, (db.window_width, db.window_height)).convert()
 
 # Set up welcome screen data
-donkey_pic = pygame.image.load('img/main_donkey_logo.png')
+donkey_pic = pygame.image.load('img/main_donkey_logo.png').convert()
 before_game = True
 
 # Hide the mouse on the screen
@@ -69,7 +70,7 @@ def pregame_window():
     db.win.blit(donkey_subtitle, (330, 550))
 
 
-def redrawGameWindow():
+def redrawGameWindow(brick_hit=False):
     '''
     Draw all of our blits on the window
     '''
@@ -83,7 +84,9 @@ def redrawGameWindow():
         ball_group.update()
         ball_group.draw(db.win)
 
-        level_1.brick_group.update()
+        if brick_hit:
+            level_1.brick_group.update()
+
         level_1.brick_group.draw(db.win)
 
         sb.draw()
@@ -91,7 +94,10 @@ def redrawGameWindow():
 
 
 def collision_ball_paddle():
-    # Collision between ball and paddle
+    '''
+    Collision between ball and paddle
+    '''
+
     collide = pygame.sprite.spritecollide(gb, paddle_group, False, pygame.sprite.collide_mask)
     if collide:
 
@@ -130,9 +136,11 @@ def collision_ball_paddle():
 
 
 def collision_ball_brick_standard(collide_dict):
-    # Check the direction of the ball
-    # we should limit options to only 2 logical options based on direction
-    # of ball
+    '''
+    Check the direction of the ball
+    we should limit options to only 2 logical options based on direction
+    of ball
+    '''
     if gb.x_direction == 1 and gb.y_direction == -1:
         # Only keep 2 logical values from dictionary
         trimmed_dict = {your_key: collide_dict[your_key] for your_key in ['left', 'bottom']}
@@ -179,7 +187,10 @@ def collision_ball_brick_standard(collide_dict):
     logger.debug(f"Hit: {hit}")
 
 def collision_ball_brick():
-    # Collision between ball and a brick
+    '''
+    Collision between ball and a brick
+    '''
+
     brick_collide = pygame.sprite.spritecollide(gb, level_1.brick_group, False, pygame.sprite.collide_mask)
     ball_x, ball_y = gb.x, gb.y
     if brick_collide:
@@ -223,6 +234,7 @@ def collision_ball_brick():
         else:
             logger.info("no speed")
 
+        return True
 
 def collision_ball_too_low():
     # If the ball gets within 5 pixels of the bottom we are saying that's an L
@@ -264,12 +276,11 @@ while run:
         gb.restart_game()
         level_1.restart_level()
 
-
     collision_ball_too_low()
     collision_ball_paddle()
-    collision_ball_brick()
+    brick_hit = collision_ball_brick()
 
-    redrawGameWindow()
+    redrawGameWindow(brick_hit)
 
 logger.debug(f"Game ball hits: {gb.blocks_hit}")
 
